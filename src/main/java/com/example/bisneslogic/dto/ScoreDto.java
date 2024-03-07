@@ -22,11 +22,7 @@ public class ScoreDto {
     @NotBlank
     @Pattern(regexp = "^([\\p{L}\\d\\s\\-\\.,]+)$")
     private String address;
-
-//    @JsonView
     @NotNull
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
-//    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate deliveryDate;
 
 

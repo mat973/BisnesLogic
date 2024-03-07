@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,7 @@ public class CategoryController {
         return converToCategoryDto(categoryService.findOne(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update/{categoryId}")
     public ResponseEntity<ApiResponse>  updateCategory(@PathVariable("categoryId") Long categoryId, @RequestBody Category category){
         if (!categoryService.findById(categoryId)){
@@ -59,7 +61,7 @@ public class CategoryController {
         categoryService.editCategory(categoryId, category);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "updated the category"), HttpStatus.OK);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<ApiResponse> create(@RequestBody @Valid CategoryDto categoryDto, BindingResult bindingResult) {
 
