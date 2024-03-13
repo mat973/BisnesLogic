@@ -1,7 +1,5 @@
-package com.example.bisneslogic.services;
+package com.example.bisneslogic.models;
 
-import com.example.bisneslogic.models.UserInfo;
-import com.example.bisneslogic.models.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,3 +61,4 @@ public class CustomUserDetails extends UserInfo implements UserDetails {
         return true;
     }
 }
+

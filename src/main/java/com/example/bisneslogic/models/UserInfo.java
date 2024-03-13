@@ -1,7 +1,6 @@
 package com.example.bisneslogic.models;
 
 
-import com.example.bisneslogic.services.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

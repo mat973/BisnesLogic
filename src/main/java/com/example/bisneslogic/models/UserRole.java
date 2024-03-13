@@ -1,4 +1,4 @@
-package com.example.bisneslogic.services;
+package com.example.bisneslogic.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
