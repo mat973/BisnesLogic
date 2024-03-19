@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CustomUserDetails extends UserInfo implements UserDetails {
@@ -19,13 +20,19 @@ public class CustomUserDetails extends UserInfo implements UserDetails {
     public CustomUserDetails(UserInfo byUsername) {
         this.username = byUsername.getUsername();
         this.password= byUsername.getPassword();
-        List<GrantedAuthority> auths = new ArrayList<>();
+        // Создаем GrantedAuthority на основе роли пользователя
+        GrantedAuthority authority = new SimpleGrantedAuthority(byUsername.getRole());
 
-        for(UserRole role : byUsername.getRoles()){
+        // Устанавливаем этот GrantedAuthority в коллекцию авторитетов
+        this.authorities = Collections.singletonList(authority);
+//        List<GrantedAuthority> auths = new ArrayList<>();
 
-            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
-        }
-        this.authorities = auths;
+
+//        for(UserRole role : byUsername.getRoles()){
+//
+//            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
+//        }
+//        this.authorities = auths;
     }
 
     @Override

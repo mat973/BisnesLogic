@@ -1,29 +1,38 @@
 package com.example.bisneslogic.models;
 
+import com.example.bisneslogic.repositories.UserRoleRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CustomUserDetails extends UserInfo implements UserDetails {
 
     private String username;
     private String password;
+
+    private UserRoleRepository userRoleRepository;
     Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(UserInfo byUsername) {
         this.username = byUsername.getUsername();
         this.password= byUsername.getPassword();
-        List<GrantedAuthority> auths = new ArrayList<>();
+        // Создаем GrantedAuthority на основе роли пользователя
+        GrantedAuthority authority = new SimpleGrantedAuthority(byUsername.getRole());
 
-        for(UserRole role : byUsername.getRoles()){
-
-            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
-        }
-        this.authorities = auths;
+        // Устанавливаем этот GrantedAuthority в коллекцию авторитетов
+        this.authorities = Collections.singletonList(authority);
+//        List<GrantedAuthority> auths = new ArrayList<>();
+//
+//        for(UserRole role : byUsername.getRoles()){
+//
+//            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
+//        }
+//        this.authorities = auths;
     }
 
     @Override

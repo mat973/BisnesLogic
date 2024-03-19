@@ -24,11 +24,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         logger.debug("Entering in loadUserByUsername Method...");
         UserInfo user = userRepository.findByUsername(username);
+        logger.debug(""+ user.getRole());
         if(user == null){
             logger.error("Username not found: " + username);
             throw new UsernameNotFoundException("could not found user..!!");
         }
         logger.info("User Authenticated Successfully..!!!");
+
         return new CustomUserDetails(user);
     }
 }

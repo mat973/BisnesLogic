@@ -26,8 +26,11 @@ public class UserInfo {
     private String username;
     @JsonIgnore
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<UserRole> roles = new HashSet<>();
 
+    private String Role;
+
+
+//    @OneToOne
+//    private Cart cart;
 
 }
