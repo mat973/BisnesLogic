@@ -2,6 +2,7 @@ package com.example.bisneslogic.controllers;
 
 
 import com.example.bisneslogic.dto.AuthRequestDTO;
+import com.example.bisneslogic.dto.AuthenticationDto;
 import com.example.bisneslogic.dto.JwtResponseDTO;
 import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.models.UserRole;
@@ -95,7 +96,7 @@ public class DemoController {
         // Сохраняем пользователя в базу данных
         userRepository.save(newUser);
 
-        cartServices.createCart();
+        cartServices.createCart(authRequestDTO.getUsername());
 
 
         return ResponseEntity.ok("Пользователь успешно зарегистрирован "+ newUser.getRole());
@@ -120,9 +121,17 @@ public class DemoController {
 //        newUser.getRole().add(userRole);
         // Сохраняем пользователя в базу данных
         userRepository.save(newUser);
+        cartServices.createCart(authRequestDTO.getUsername());
 
         return ResponseEntity.ok("Пользователь успешно зарегистрирован"+ newUser.getRole());
     }
+
+
+//    @PostMapping("/auth")
+//    public ResponseEntity<String> auth(@RequestBody AuthenticationDto authenticationDto){
+//        userService.authenticate(authenticationDto);
+//
+//    }
 
 
     @PreAuthorize("hasAuthority('ADMIN')")

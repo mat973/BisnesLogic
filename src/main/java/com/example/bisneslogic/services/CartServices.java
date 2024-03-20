@@ -7,6 +7,8 @@ import com.example.bisneslogic.models.Cart;
 import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.repositories.CartRepository;
 import com.example.bisneslogic.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +18,13 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 
 @Service
 public class CartServices {
 
     private final CartRepository cartRepository;
-
+    private static final Logger logger = LoggerFactory.getLogger(CartServices.class);
 
 
     @Autowired
@@ -33,11 +34,32 @@ public class CartServices {
         this.cartRepository = cartRepository;
 
     }
+    public ResponseEntity<ApiResponse> createCart(String username) {
+        Cart cart = new Cart();
+
+        // Получаем имя текущего пользователя
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        // Получаем пользователя по имени
+        UserInfo user = userRepository.findByUsername(username);
+
+
+            // Устанавливаем пользователя в корзину
+            cart.setUserInfo(user);
+            cart.setCreationDate(timestamp);
+
+            // Сохраняем корзину
+            cartRepository.save(cart);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 
     public ResponseEntity<ApiResponse> createCart() {
         Cart cart = new Cart();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        logger.debug(""+ authentication);
         // Получаем имя текущего пользователя
         String username = authentication.getName();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -61,7 +83,9 @@ public class CartServices {
     }
 
     public Cart getCurrentCart() {
-        Cart cart = cartRepository.findMyCurrentCart();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserInfo user = userRepository.findByUsername(authentication.getName());
+        Cart cart = cartRepository.findMyCurrentCart(user.getId());
 
         return cart;
     }

@@ -52,7 +52,7 @@ public class CategoryController {
         return converToCategoryDto(categoryService.findOne(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("/update/{categoryId}")
     public ResponseEntity<ApiResponse>  updateCategory(@PathVariable("categoryId") Long categoryId, @RequestBody Category category){
         if (!categoryService.findById(categoryId)){
@@ -61,7 +61,7 @@ public class CategoryController {
         categoryService.editCategory(categoryId, category);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "updated the category"), HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping()
     public ResponseEntity<ApiResponse> create(@RequestBody @Valid CategoryDto categoryDto, BindingResult bindingResult) {
 

@@ -1,6 +1,6 @@
 package com.example.bisneslogic.repositories;
 
-import com.example.bisneslogic.models.User;
+
 import com.example.bisneslogic.models.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;

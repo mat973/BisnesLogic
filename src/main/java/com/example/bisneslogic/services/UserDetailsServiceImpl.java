@@ -1,5 +1,6 @@
 package com.example.bisneslogic.services;
 
+import com.example.bisneslogic.dto.AuthenticationDto;
 import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -33,4 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new CustomUserDetails(user);
     }
+
+//    public void authenticate(AuthenticationDto authenticationDto) {
+//    }
 }
