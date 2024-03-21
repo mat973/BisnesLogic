@@ -29,6 +29,8 @@ public class UserInfo {
 
     private String Role;
 
+    private Double money;
+
 
 //    @OneToOne
 //    private Cart cart;

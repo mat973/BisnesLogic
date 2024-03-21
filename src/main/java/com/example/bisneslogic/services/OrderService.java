@@ -4,13 +4,20 @@ import com.example.bisneslogic.common.CartNotFoundException;
 import com.example.bisneslogic.common.OrderNotFoundException;
 import com.example.bisneslogic.dto.ScoreDto;
 import com.example.bisneslogic.dto.cart.item.CartItemDto;
+import com.example.bisneslogic.dto.cart.item.CartItemListDto;
 import com.example.bisneslogic.dto.order.OrderDto;
+import com.example.bisneslogic.models.CartItem;
 import com.example.bisneslogic.models.Delivery;
 import com.example.bisneslogic.models.Order;
+import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.repositories.CartItemRepository;
 import com.example.bisneslogic.repositories.OrderRepository;
+import com.example.bisneslogic.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +26,7 @@ import java.util.List;
 public class OrderService  {
 
     private OrderRepository orderRepository;
-
+    private UserRepository userRepository;
     private CartServices cartServices;
 
     private CartItemService cartItemService;
@@ -28,24 +35,36 @@ public class OrderService  {
     private DeliveryService deliveryService;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, CartServices cartServices,
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, CartServices cartServices,
                         CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService) {
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
         this.cartServices = cartServices;
         this.cartItemService = cartItemService;
         this.cartItemRepository = cartItemRepository;
         this.deliveryService = deliveryService;
     }
 
+    @Transactional
     public Order createOrder(ScoreDto scoreDto) {
-        Order order = new Order();
-        Delivery delivery = new Delivery(scoreDto.getAddress(),scoreDto.getDeliveryDate());
-        order.setCart(cartServices.getCurrentCart());
-        cartServices.createCart();
-        deliveryService.createDelivery(delivery);
-        order.setDelivery(delivery);
-        orderRepository.save(order);
-        return order;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = authentication.getName();
+        UserInfo user = userRepository.findByUsername(username);
+
+
+        CartItemDto cartItemDto= cartItemService.listCartItems();
+        if(user.getMoney() > cartItemDto.getTotalCost()) {
+            user.setMoney(user.getMoney() - cartItemDto.getTotalCost());
+            Order order = new Order();
+            Delivery delivery = new Delivery(scoreDto.getAddress(), scoreDto.getDeliveryDate());
+            order.setCart(cartServices.getCurrentCart());
+            cartServices.createCart();
+            deliveryService.createDelivery(delivery);
+            order.setDelivery(delivery);
+            orderRepository.save(order);
+            return order;
+        }else throw new RuntimeException();
     }
 
 

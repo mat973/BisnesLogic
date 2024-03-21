@@ -4,6 +4,7 @@ package com.example.bisneslogic.controllers;
 import com.example.bisneslogic.dto.AuthRequestDTO;
 import com.example.bisneslogic.dto.AuthenticationDto;
 import com.example.bisneslogic.dto.JwtResponseDTO;
+import com.example.bisneslogic.dto.MoneyDto;
 import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.models.UserRole;
 import com.example.bisneslogic.repositories.UserRepository;
@@ -46,6 +47,8 @@ public class DemoController {
     @Autowired
     private CartServices cartServices;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
 
 
@@ -90,6 +93,7 @@ public class DemoController {
         newUser.setUsername(authRequestDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(authRequestDTO.getPassword())); // Хешируем пароль
         newUser.setRole("USER");
+        newUser.setMoney(0.0);
         // Здесь можно добавить дополнительные детали пользователя, если они есть
 //        UserRole userRole = userRoleRepository.findByName("USER"); // Предполагается, что такая роль уже существует в базе данных
 //        newUser.getRoles().add(userRole);
@@ -139,8 +143,18 @@ public class DemoController {
     public String test() {
         try {
             return "Welcome";
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+        @PostMapping("/addMoney")
+        public ResponseEntity<String> addMoney(@RequestBody MoneyDto money) {
+            userDetailsService.addMoney(money.getMoney());
+            return ResponseEntity.ok("Money added");
+        }
+
+
+
+
 }
