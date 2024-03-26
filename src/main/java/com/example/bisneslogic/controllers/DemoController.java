@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -107,6 +108,14 @@ public class DemoController {
     }
 
 
+    @GetMapping("/userInfo")
+    public ResponseEntity<UserInfo> getUser(){
+Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+UserInfo userInfo =userRepository.findByUsername(authentication.getName());
+        return ResponseEntity.ok(userInfo);
+    }
+
+
     @PostMapping("/register1")
     public ResponseEntity<String> registerAdmin(@RequestBody AuthRequestDTO authRequestDTO) {
         // Проверяем, не существует ли уже пользователь с таким именем
@@ -120,6 +129,7 @@ public class DemoController {
         newUser.setUsername(authRequestDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(authRequestDTO.getPassword())); // Хешируем пароль
         newUser.setRole("ADMIN");
+        newUser.setMoney(0.0);
         // Здесь можно добавить дополнительные детали пользователя, если они есть
 //        UserRole userRole = userRoleRepository.findByName("ADMIN"); // Предполагается, что такая роль уже существует в базе данных
 //        newUser.getRole().add(userRole);

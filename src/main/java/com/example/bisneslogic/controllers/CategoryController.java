@@ -54,6 +54,7 @@ public class CategoryController {
 
 
     @PostMapping("/update/{categoryId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse>  updateCategory(@PathVariable("categoryId") Long categoryId, @RequestBody Category category){
         if (!categoryService.findById(categoryId)){
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "the category not exist"), HttpStatus.NOT_FOUND);
@@ -63,6 +64,7 @@ public class CategoryController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse> create(@RequestBody @Valid CategoryDto categoryDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {

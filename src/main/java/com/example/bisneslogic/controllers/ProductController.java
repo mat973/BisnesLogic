@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,7 @@ public class ProductController {
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse> create(@RequestBody @Valid ProductDto productDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errorMsg = new StringBuilder();
@@ -80,6 +82,7 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     @PutMapping("/{productId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse>  updateProduct(@PathVariable("productId") Long productId, @RequestBody ProductDto productDto){
         if (!productService.findById(productId)){
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "the Product not exist"), HttpStatus.NOT_FOUND);

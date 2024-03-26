@@ -4,9 +4,7 @@ import com.example.bisneslogic.common.CartNotFoundException;
 import com.example.bisneslogic.common.OrderNotFoundException;
 import com.example.bisneslogic.dto.ScoreDto;
 import com.example.bisneslogic.dto.cart.item.CartItemDto;
-import com.example.bisneslogic.dto.cart.item.CartItemListDto;
 import com.example.bisneslogic.dto.order.OrderDto;
-import com.example.bisneslogic.models.CartItem;
 import com.example.bisneslogic.models.Delivery;
 import com.example.bisneslogic.models.Order;
 import com.example.bisneslogic.models.UserInfo;
@@ -14,6 +12,8 @@ import com.example.bisneslogic.repositories.CartItemRepository;
 import com.example.bisneslogic.repositories.OrderRepository;
 import com.example.bisneslogic.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,19 +34,26 @@ public class OrderService  {
 
     private DeliveryService deliveryService;
 
+    private KafkaTemplate<String , String> kafkaTemplate;
+
+    @Value("${kafka.emailTopic}")
+    private String emailTopic;
+
     @Autowired
     public OrderService(OrderRepository orderRepository, UserRepository userRepository, CartServices cartServices,
-                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService) {
+                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, KafkaTemplate<String, String> kafkaTemplate, String emailTopic) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartServices = cartServices;
         this.cartItemService = cartItemService;
         this.cartItemRepository = cartItemRepository;
         this.deliveryService = deliveryService;
+        this.kafkaTemplate = kafkaTemplate;
+        this.emailTopic = emailTopic;
     }
 
-    @Transactional
-    public Order createOrder(ScoreDto scoreDto) {
+    @Transactional()
+    public Order createOrder(ScoreDto scoreDto)   {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
@@ -63,8 +70,9 @@ public class OrderService  {
             deliveryService.createDelivery(delivery);
             order.setDelivery(delivery);
             orderRepository.save(order);
+            kafkaTemplate.send(emailTopic, "Новыйзаказ создан"+ order.getId() );
             return order;
-        }else throw new RuntimeException();
+        }else throw new RuntimeException("Недостаточно денег на счете пользователя!");
     }
 
 
