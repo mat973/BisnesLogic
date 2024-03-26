@@ -41,7 +41,7 @@ public class OrderService  {
 
     @Autowired
     public OrderService(OrderRepository orderRepository, UserRepository userRepository, CartServices cartServices,
-                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, KafkaTemplate<String, String> kafkaTemplate, String emailTopic) {
+                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, KafkaTemplate<String, String> kafkaTemplate) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartServices = cartServices;
@@ -49,7 +49,7 @@ public class OrderService  {
         this.cartItemRepository = cartItemRepository;
         this.deliveryService = deliveryService;
         this.kafkaTemplate = kafkaTemplate;
-        this.emailTopic = emailTopic;
+
     }
 
     @Transactional()

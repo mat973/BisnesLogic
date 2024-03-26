@@ -94,6 +94,7 @@ public class DemoController {
         newUser.setUsername(authRequestDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(authRequestDTO.getPassword())); // Хешируем пароль
         newUser.setRole("USER");
+        newUser.setEmail(authRequestDTO.getEmail());
         newUser.setMoney(0.0);
         // Здесь можно добавить дополнительные детали пользователя, если они есть
 //        UserRole userRole = userRoleRepository.findByName("USER"); // Предполагается, что такая роль уже существует в базе данных
@@ -129,6 +130,7 @@ UserInfo userInfo =userRepository.findByUsername(authentication.getName());
         newUser.setUsername(authRequestDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(authRequestDTO.getPassword())); // Хешируем пароль
         newUser.setRole("ADMIN");
+        newUser.setEmail(authRequestDTO.getEmail());
         newUser.setMoney(0.0);
         // Здесь можно добавить дополнительные детали пользователя, если они есть
 //        UserRole userRole = userRoleRepository.findByName("ADMIN"); // Предполагается, что такая роль уже существует в базе данных

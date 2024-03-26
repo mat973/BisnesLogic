@@ -2,6 +2,7 @@ package com.example.bisneslogic.config;
 
 
 import com.example.bisneslogic.kafka.KafkaConsumer;
+import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,25 +38,24 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    // Настройки для Consumer
+    // Настройки для Cons
+    // umer
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group-id");
+        configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         // Другие настройки, если необходимо
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
+
 
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
-    }
-
-    @Bean
-    public KafkaConsumer kafkaConsumer() {
-        return new KafkaConsumer();
     }
 }

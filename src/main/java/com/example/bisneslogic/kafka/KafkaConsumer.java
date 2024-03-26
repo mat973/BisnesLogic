@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @ToString
-@NoArgsConstructor
+
 @AllArgsConstructor
 public class KafkaConsumer {
 
