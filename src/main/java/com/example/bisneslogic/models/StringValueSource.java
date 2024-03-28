@@ -9,27 +9,26 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class StringValueSource implements  ValueSource{
 
+
+public class StringValueSource implements ValueSource {
     private static final Logger log = LoggerFactory.getLogger(StringValueSource.class);
-
     private final AtomicLong nextValue = new AtomicLong(1);
-
     private final DataSender valueConsumer;
 
-    public StringValueSource(DataSender dataSender){this.valueConsumer = dataSender;}
-
-
+    public StringValueSource(DataSender dataSender) {
+        this.valueConsumer = dataSender;
+    }
 
     @Override
     public void generate() {
         var executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(()-> valueConsumer.send(makeValue(),0,1, TimeUnit.SECONDS));
+        executor.scheduleAtFixedRate(() -> valueConsumer.send(makeValue()), 0, 1, TimeUnit.SECONDS);
         log.info("generation started");
     }
 
-    private StringValue makeValue(){
+    private StringValue makeValue() {
         var id = nextValue.getAndIncrement();
-        return new StringValue(id, "stVal" + id);
+        return new StringValue(id, "stVal:" + id);
     }
 }

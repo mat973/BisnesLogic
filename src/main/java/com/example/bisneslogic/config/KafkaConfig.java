@@ -3,6 +3,9 @@ package com.example.bisneslogic.config;
 
 
 import com.example.bisneslogic.models.StringValue;
+import com.example.bisneslogic.models.StringValueSource;
+import com.example.bisneslogic.services.DataSender;
+import com.example.bisneslogic.services.DataSenderKafka;
 import com.example.bisneslogic.services.UserDetailsServiceImpl;
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -91,5 +94,5 @@ public class KafkaConfig {
     }
 
     @Bean
-    public StringValueSourse stringValueSourse(DataSender dataSender){return new StringValueSourse(dataSender);}
+    public StringValueSource stringValueSourse(DataSender dataSender){return new StringValueSource(dataSender);}
 }
