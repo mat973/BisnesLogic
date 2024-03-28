@@ -12,8 +12,6 @@ import com.example.bisneslogic.repositories.CartItemRepository;
 import com.example.bisneslogic.repositories.OrderRepository;
 import com.example.bisneslogic.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,22 +32,26 @@ public class OrderService  {
 
     private DeliveryService deliveryService;
 
-    private KafkaTemplate<String , String> kafkaTemplate;
 
-    @Value("${kafka.emailTopic}")
-    private String emailTopic;
+    private EmailService emailService;
+
+//    private KafkaTemplate<String , String> kafkaTemplate;
+
+//    @Value("${kafka.emailTopic}")
+//    private String emailTopic;
 
     @Autowired
     public OrderService(OrderRepository orderRepository, UserRepository userRepository, CartServices cartServices,
-                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, KafkaTemplate<String, String> kafkaTemplate) {
+                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartServices = cartServices;
         this.cartItemService = cartItemService;
         this.cartItemRepository = cartItemRepository;
         this.deliveryService = deliveryService;
-        this.kafkaTemplate = kafkaTemplate;
 
+
+        this.emailService = emailService;
     }
 
     @Transactional()
@@ -70,7 +72,8 @@ public class OrderService  {
             deliveryService.createDelivery(delivery);
             order.setDelivery(delivery);
             orderRepository.save(order);
-            kafkaTemplate.send(emailTopic, "Новыйзаказ создан"+ order.getId() );
+            emailService.sendEmail();
+            //kafkaTemplate.send(emailTopic, "Новыйзаказ создан"+ order.getId() );
             return order;
         }else throw new RuntimeException("Недостаточно денег на счете пользователя!");
     }

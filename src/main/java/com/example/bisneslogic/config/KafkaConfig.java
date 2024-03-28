@@ -1,22 +1,41 @@
 package com.example.bisneslogic.config;
 
 
-import com.example.bisneslogic.kafka.KafkaConsumer;
+
+import com.example.bisneslogic.models.StringValue;
+import com.example.bisneslogic.services.UserDetailsServiceImpl;
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+import org.apache.juli.logging.Log;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.support.JacksonUtils;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,38 +43,53 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
+
+    public final String topicName;
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
+
+
+    public KafkaConfig(@Value("${kafka.emailTopic}") String topicName) {
+        this.topicName = topicName;
+    }
+
     // Настройки для Producer
+
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        // Другие настройки, если необходимо
-        return new DefaultKafkaProducerFactory<>(configProps);
+    public ObjectMapper objectMapper(){
+        return JacksonUtils.enhancedObjectMapper();
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
+    public ProducerFactory<String, StringValue> producerFactory(
+            KafkaProperties kafkaProperties, ObjectMapper mapper){
+        var props = kafkaProperties.buildProducerProperties();
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-    // Настройки для Cons
-    // umer
-    @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group-id");
-        configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        // Другие настройки, если необходимо
-        return new DefaultKafkaConsumerFactory<>(configProps);
+        var kafkaProducerFactory = new DefaultKafkaProducerFactory<String, StringValue>(props);
+        kafkaProducerFactory.setValueSerializer(new JsonSerializer<>(mapper));
+        return kafkaProducerFactory;
     }
-
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
+    public  KafkaTemplate<String, StringValue> kafkaTemplate(
+            ProducerFactory<String, StringValue> producerFactory){
+        return new KafkaTemplate<>(producerFactory);
     }
+
+    @Bean
+    public NewTopic topic(){
+        return TopicBuilder.name(topicName).partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public DataSender dataSender(NewTopic topic, KafkaTemplate<String, StringValue> kafkaTemplate){
+        return new DataSenderKafka(topic.name(),
+                kafkaTemplate,
+                stringValue -> logger.info("asked, value:" + stringValue));
+    }
+
+    @Bean
+    public StringValueSourse stringValueSourse(DataSender dataSender){return new StringValueSourse(dataSender);}
 }
