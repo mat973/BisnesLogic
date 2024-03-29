@@ -113,7 +113,7 @@ public class KafkaConfig {
         props.put(TYPE_MAPPINGS, "com.example.bisneslogic.models.StringValue:com.example.bisneslogic.models.StringValue");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 3_000);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20_000);
 
         var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, StringValue>(props);
         kafkaConsumerFactory.setValueDeserializer(new JsonDeserializer<>(mapper));
@@ -168,3 +168,4 @@ public class KafkaConfig {
     }
 
 }
+//gepite8027@otemdi.com

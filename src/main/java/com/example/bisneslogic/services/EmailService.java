@@ -43,4 +43,6 @@ public class EmailService {
             System.err.println("Ошибка при отправке письма: " + e.getMessage());
         }
     }
+
+
 }

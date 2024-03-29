@@ -19,6 +19,7 @@ public class StringValueConsumerLogger implements StringValueConsumer {
 //    private static final Logger logi = LoggerFactory.getLogger(StringValueConsumerLogger.class);
  static final Logger logi = LoggerFactory.getLogger(StringValueConsumerLogger.class);
 
+ public int digit =1;
 
 
     private EmailService emailService;
@@ -39,7 +40,10 @@ public class StringValueConsumerLogger implements StringValueConsumer {
         logi.info(""+values.value());
         logi.info("email was send");
         if (emailService != null  ) {
-            emailService.sendEmail(values.value());
+            if(values.id()== digit) {
+                    digit+=1;
+                   emailService.sendEmail(values.value());
+            }
         } else {
             logi.error("EmailService is null. Unable to send email.");
         }
