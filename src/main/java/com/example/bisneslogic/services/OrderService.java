@@ -7,6 +7,7 @@ import com.example.bisneslogic.dto.cart.item.CartItemDto;
 import com.example.bisneslogic.dto.order.OrderDto;
 import com.example.bisneslogic.models.Delivery;
 import com.example.bisneslogic.models.Order;
+import com.example.bisneslogic.models.StringValueSource;
 import com.example.bisneslogic.models.UserInfo;
 import com.example.bisneslogic.repositories.CartItemRepository;
 import com.example.bisneslogic.repositories.OrderRepository;
@@ -35,6 +36,8 @@ public class OrderService  {
 
     private EmailService emailService;
 
+    private StringValueSource stringValueSource;
+
 //    private KafkaTemplate<String , String> kafkaTemplate;
 
 //    @Value("${kafka.emailTopic}")
@@ -42,7 +45,7 @@ public class OrderService  {
 
     @Autowired
     public OrderService(OrderRepository orderRepository, UserRepository userRepository, CartServices cartServices,
-                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, EmailService emailService) {
+                        CartItemService cartItemService, CartItemRepository cartItemRepository, DeliveryService deliveryService, EmailService emailService, StringValueSource stringValueSource) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartServices = cartServices;
@@ -52,6 +55,7 @@ public class OrderService  {
 
 
         this.emailService = emailService;
+        this.stringValueSource = stringValueSource;
     }
 
     @Transactional()
@@ -72,7 +76,7 @@ public class OrderService  {
             deliveryService.createDelivery(delivery);
             order.setDelivery(delivery);
             orderRepository.save(order);
-            emailService.sendEmail();
+            stringValueSource.generate(user.getEmail());
             //kafkaTemplate.send(emailTopic, "Новыйзаказ создан"+ order.getId() );
             return order;
         }else throw new RuntimeException("Недостаточно денег на счете пользователя!");

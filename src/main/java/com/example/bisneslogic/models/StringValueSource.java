@@ -21,14 +21,15 @@ public class StringValueSource implements ValueSource {
     }
 
     @Override
-    public void generate() {
-        var executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> valueConsumer.send(makeValue()), 0, 1, TimeUnit.SECONDS);
-        log.info("generation started");
+    public void generate(String mail) {
+        var id = nextValue.getAndIncrement();
+
+      valueConsumer.send(new StringValue(id, mail));
+        log.info("Send in Kafka");
     }
 
-    private StringValue makeValue() {
-        var id = nextValue.getAndIncrement();
-        return new StringValue(id, "stVal:" + id);
-    }
+//    private StringValue makeValue() {
+//        var id = nextValue.getAndIncrement();
+//        return new StringValue(id, "stVal:" + id);
+//    }
 }

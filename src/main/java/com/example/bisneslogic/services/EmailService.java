@@ -26,13 +26,13 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendEmail() {
+    public void sendEmail(String email) {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         try {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserInfo userInfo = userRepository.findByUsername(authentication.getName());
-            helper.setTo(userInfo.getEmail());
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        UserInfo userInfo = userRepository.findByUsername(authentication.getName());
+            helper.setTo(email);
             helper.setSubject("Order");
             helper.setText("Thanks fo order");
             javaMailSender.send(message);
