@@ -1,8 +1,11 @@
 package com.example.bisneslogic.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
+@Getter
+@Setter
 public class EmailResponse {
 
 
@@ -15,6 +18,13 @@ public class EmailResponse {
 
     public EmailResponse(boolean success, String message) {
         this.success = success;
+        this.message = message;
+    }
+
+    public EmailResponse(boolean success, String jobId, String jobGroup, String message) {
+        this.success = success;
+        this.jobId = jobId;
+        this.jobGroup = jobGroup;
         this.message = message;
     }
 

@@ -45,4 +45,23 @@ public class EmailService {
     }
 
 
+    public void sendEmail(String email, String subject, String body) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        try {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        UserInfo userInfo = userRepository.findByUsername(authentication.getName());
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(body);
+            javaMailSender.send(message);
+            System.out.println("Письмо отправлено успешно.");
+
+
+        } catch (MessagingException e) {
+            System.err.println("Ошибка при отправке письма: " + e.getMessage());
+        }
+    }
+
+
 }
