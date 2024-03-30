@@ -42,7 +42,7 @@ public class StringValueConsumerLogger implements StringValueConsumer {
         if (emailService != null  ) {
 //            if(values.id()== digit) {
 //                    digit+=1;
-                   emailService.sendEmail(values.value());
+                   emailService.sendEmail2(values.value());
 //            }
         } else {
             logi.error("EmailService is null. Unable to send email.");
