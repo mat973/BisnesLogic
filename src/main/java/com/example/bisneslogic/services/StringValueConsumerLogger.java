@@ -40,10 +40,10 @@ public class StringValueConsumerLogger implements StringValueConsumer {
         logi.info(""+values.value());
         logi.info("email was send");
         if (emailService != null  ) {
-            if(values.id()== digit) {
-                    digit+=1;
+//            if(values.id()== digit) {
+//                    digit+=1;
                    emailService.sendEmail(values.value());
-            }
+//            }
         } else {
             logi.error("EmailService is null. Unable to send email.");
         }

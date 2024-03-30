@@ -38,7 +38,7 @@ public class EmailService {
             javaMailSender.send(message);
             System.out.println("Письмо отправлено успешно.");
 
-        javaMailSender.send(message);
+
         } catch (MessagingException e) {
             System.err.println("Ошибка при отправке письма: " + e.getMessage());
         }
